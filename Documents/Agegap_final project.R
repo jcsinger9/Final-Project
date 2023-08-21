@@ -16,22 +16,31 @@ agegap_cols <- c("movie_name", "release_year", "director",
 agegap <- read_csv(here::here("age_gaps.csv"),
 col_names = agegap_cols)
 
-agegap = subset(agegap, select = -c(couple_number, character_1_gender,
-																		character_2_gender, actor_1_birthdate,
-																		actor_2_birthdate))
+agegap = subset(agegap, select = -c(couple_number, actor_1_birthdate,
+																		actor_2_birthdate, age_difference))
+
+agegap$character_1_gender <- ifelse(agegap$character_1_gender %in% c("man"),1,0)
+agegap$character_1_gender <- ifelse(agegap$character_1_gender %in% c("man"),1,0)
+
+
+
+table(agegap$character_1_gender, useNA="always")
+
+as.numeric(agegap$actor_1_age)
+as.numeric(agegap$actor_2_age)
+
+agegap$age_difference <- (actor_1_age - actor_2_age)
 
 tbl_summary(
 	agegap,
-	by = age_difference,
+	by = movie_name,
 	include = c(movie_name, release_year, director, age_difference,
-							actor_1_name, actor_2_name, actor_1_age, actor_2_age))
+							actor_1_age, actor_2_age))
 
 tbl_uvregression(
-	alone,
-	x = Season,
-	include = c(Version, Season, Name, Item_number, Item),
+	agegap,
+	y = age_difference,
+	include = c(release_year, director, age_difference),
 method = lm)
 
-
-
-
+hist(agegap$actor_1_age)
