@@ -24,21 +24,23 @@ agegap$character_1_gender <- ifelse(agegap$character_1_gender
 agegap$character_2_gender <- ifelse(agegap$character_2_gender
 																		%in% c("man"),1,0)
 
-table(agegap$character_1_gender, useNA="always")
-
-age1 <- as.numeric(agegap$actor_1_age)
+agegap$actor_1_age <- as.numeric(agegap$actor_1_age)
 age1[!is.na(age1)]
 
-age2 <- as.numeric(agegap$actor_2_age)
+agegap$actor_2_age <- as.numeric(agegap$actor_2_age)
 age2[!is.na(age2)]
 
-agegap$age_difference <- (age1 - age2)
+agegap$age_difference <- (agegap$actor_1_age - agegap$actor_2_age)
 
 tbl_summary(
 	agegap,
-	by = movie_name,
-	include = c(movie_name, release_year, director, age_difference,
-							actor_1_age, actor_2_age))
+	by = actor_1_age,
+	include = c(actor_2_age, age_difference))
+
+tbl_summary(
+	agegap,
+	by = age_difference,
+	include = c(actor_1_age, actor_2_age))
 
 tbl_uvregression(
 	agegap,
