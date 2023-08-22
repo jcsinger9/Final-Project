@@ -25,24 +25,39 @@ agegap$character_2_gender <- ifelse(agegap$character_2_gender
 																		%in% c("man"),1,0)
 
 agegap$actor_1_age <- as.numeric(agegap$actor_1_age)
-age1[!is.na(age1)]
 
 agegap$actor_2_age <- as.numeric(agegap$actor_2_age)
-age2[!is.na(age2)]
 
 agegap$age_difference <- (agegap$actor_1_age - agegap$actor_2_age)
 
 tbl_summary(
 	agegap,
-	by = actor_1_age,
-	include = c(actor_2_age, age_difference))
+	by = character_1_gender,
+	include = c(actor_2_age, age_difference, actor_1_age,
+							character_2_gender),
+	label = list(
+		actor_2_age ~ "Age of Actor 2",
+		actor_1_age ~ "Age of Actor 1",
+		age_difference ~ "Age Difference Between Actor 1 and Actor 2",
+		character_1_gender ~ "Gender of Character 1",
+		character_2_gender ~ "Gender of Character 2"
+		),
+	missing_text = "Missing")
+
 
 tbl_summary(
 	agegap,
 	by = age_difference,
 	include = c(actor_1_age, actor_2_age))
 
-tbl_uvregression(
+linear_model <- lm(age_difference ~ character_1_gender + character_2_gender +
+									 actor_2_age, actor_1_age,
+									 data = agegap)
+
+tbl_regression(
+	linear_model)
+
+actor1age_table <- tbl_uvregression(
 	agegap,
 	y = actor_1_age,
 	include = c(actor_2_age, age_difference, character_1_gender,
@@ -56,4 +71,12 @@ tbl_uvregression(
 							character_2_gender),
 	method = lm)
 
+inline_text(actor1age_table, variable = "age_difference")
+
 hist(agegap$age_difference)
+
+#function: mean age difference between actor 1 and actor 2
+#add all packages into quarto doc and run code to create output
+
+
+
