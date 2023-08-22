@@ -19,17 +19,20 @@ col_names = agegap_cols)
 agegap = subset(agegap, select = -c(couple_number, actor_1_birthdate,
 																		actor_2_birthdate, age_difference))
 
-agegap$character_1_gender <- ifelse(agegap$character_1_gender %in% c("man"),1,0)
-agegap$character_1_gender <- ifelse(agegap$character_1_gender %in% c("man"),1,0)
-
-
+agegap$character_1_gender <- ifelse(agegap$character_1_gender
+																		%in% c("man"),1,0)
+agegap$character_2_gender <- ifelse(agegap$character_2_gender
+																		%in% c("man"),1,0)
 
 table(agegap$character_1_gender, useNA="always")
 
-as.numeric(agegap$actor_1_age)
-as.numeric(agegap$actor_2_age)
+age1 <- as.numeric(agegap$actor_1_age)
+age1[!is.na(age1)]
 
-agegap$age_difference <- (actor_1_age - actor_2_age)
+age2 <- as.numeric(agegap$actor_2_age)
+age2[!is.na(age2)]
+
+agegap$age_difference <- (age1 - age2)
 
 tbl_summary(
 	agegap,
