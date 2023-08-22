@@ -56,5 +56,4 @@ tbl_uvregression(
 							character_2_gender),
 	method = lm)
 
-
-hist(agegap$actor_1_age)
+hist(agegap$age_difference)
