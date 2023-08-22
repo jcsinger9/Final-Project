@@ -44,8 +44,17 @@ tbl_summary(
 
 tbl_uvregression(
 	agegap,
-	y = age_difference,
-	include = c(release_year, director, age_difference),
+	y = actor_1_age,
+	include = c(actor_2_age, age_difference, character_1_gender,
+							character_2_gender),
 method = lm)
+
+tbl_uvregression(
+	agegap,
+	y = age_difference,
+	include = c(actor_1_age, actor_2_age, character_1_gender,
+							character_2_gender),
+	method = lm)
+
 
 hist(agegap$actor_1_age)
