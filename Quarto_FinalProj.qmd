@@ -1,7 +1,19 @@
-install.packages("gtsummary")
-install.packages(tidyverse)
-install.packages("here")
-install.packages("broom")
+---
+title: "Final Project Quarto"
+author: "Julia Singer"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
 
 library(gtsummary)
 library(tidyverse)
@@ -15,7 +27,9 @@ agegap_cols <- c("movie_name", "release_year", "director",
 
 agegap <- read_csv(here::here("age_gaps.csv"),
 col_names = agegap_cols)
+```
 
+```{r}
 agegap = subset(agegap, select = -c(couple_number, actor_1_birthdate,
 																		actor_2_birthdate, age_difference))
 
@@ -23,12 +37,19 @@ agegap$character_1_gender <- ifelse(agegap$character_1_gender
 																		%in% c("man"),1,0)
 agegap$character_2_gender <- ifelse(agegap$character_2_gender
 																		%in% c("man"),1,0)
+```
 
+```{r}
 agegap$actor_1_age <- as.numeric(agegap$actor_1_age)
 
 agegap$actor_2_age <- as.numeric(agegap$actor_2_age)
 
 agegap$age_difference <- (agegap$actor_1_age - agegap$actor_2_age)
+```
+
+```{r}
+#| label: tbl-1 
+#| tbl-cap: Summary of Character 1's Gender Identity Across Relevant Variables
 
 tbl_summary(
 	agegap,
@@ -42,13 +63,15 @@ tbl_summary(
 		character_1_gender ~ "Gender Identity of Character 1",
 		character_2_gender ~ "Gender Identity of Character 2"
 		),
-	missing_text = "Missing")
+missing_text = "Missing")
 
+```
 
-tbl_summary(
-	agegap,
-	by = age_difference,
-	include = c(actor_1_age, actor_2_age))
+You can add options to executable code like this
+
+```{r}
+#| label: tbl-2
+#| tbl-cap: Data stratified by Age of Actor 1
 
 actor1age_table <- tbl_uvregression(
 	agegap,
@@ -57,21 +80,33 @@ actor1age_table <- tbl_uvregression(
 							character_2_gender),
 method = lm)
 
-tbl_uvregression(
-	agegap,
-	y = age_difference,
-	include = c(actor_1_age, actor_2_age, character_1_gender,
-							character_2_gender),
-	method = lm)
+agediffvalue <- inline_text(actor1age_table, variable = "age_difference")
 
 inline_text(actor1age_table, variable = "actor_2_age")
 
+avgact1age <- mean(agegap$actor_1_age, na.rm = TRUE)
+
+avgact2age <- mean(agegap$actor_2_age, na.rm = TRUE)
+
+```
+
+The average age of Actor 1 actors is \`r round(avgact1age, 1)\`
+
+The average age of Actor 2 actors is \`r round(avgact2age, 1)\`
+
+In @tbl-2, the age of actor 2 is (\`r inline_text(actor1age_table, variable = "actor_2_age")\`) times the age of actor 1.
+
+```{r}
+#| label: fig-1
+#| fig-cap: Histogram of Age Difference Across Dataset
+
 hist(agegap$age_difference)
 
-#function: mean age difference between actor 1 and actor 2
-#add all packages into quarto doc and run code to create output
+```
 
+In @fig-1, the relationship between \# of actors and age difference is inversely related. The age difference between Actors 1 and 2 increases as the frequency decreases.
 
+```{r}
 mean_age <- function(age_difference) {
 	t <- length(age_difference)
 	mean <- sum(age_difference, na.rm = TRUE)/t
@@ -79,9 +114,11 @@ mean_age <- function(age_difference) {
 }
 
 mean_age(agegap$age_difference)
+```
 
-summary(agegap$age_difference)
-
-
-usethis::use_readme_rmd
-
+```{r}
+install.packages("renv")
+renv::init()
+renv::snapshot()
+renv::status()
+```
