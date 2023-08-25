@@ -5,15 +5,8 @@ format: html
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
+#| message: false
 
 library(gtsummary)
 library(tidyverse)
@@ -40,6 +33,8 @@ agegap$character_2_gender <- ifelse(agegap$character_2_gender
 ```
 
 ```{r}
+#| warning: false
+
 agegap$actor_1_age <- as.numeric(agegap$actor_1_age)
 
 agegap$actor_2_age <- as.numeric(agegap$actor_2_age)
@@ -48,30 +43,37 @@ agegap$age_difference <- (agegap$actor_1_age - agegap$actor_2_age)
 ```
 
 ```{r}
-#| label: tbl-1 
-#| tbl-cap: Summary of Character 1's Gender Identity Across Relevant Variables
+#| label: tbl-1
+#| tbl-cap: Summary of Actor Ages and Gender 
 
 tbl_summary(
 	agegap,
 	by = character_1_gender,
-	include = c(actor_2_age, age_difference, actor_1_age,
+	include = c(actor_2_age, actor_1_age,
 							character_2_gender),
 	label = list(
 		actor_2_age ~ "Age of Actor 2",
 		actor_1_age ~ "Age of Actor 1",
-		age_difference ~ "Age Difference Between Actor 1 and Actor 2",
 		character_1_gender ~ "Gender Identity of Character 1",
 		character_2_gender ~ "Gender Identity of Character 2"
 		),
 missing_text = "Missing")
 
+table_summ <- tbl_summary(
+	agegap,
+	by = character_1_gender,
+	include = c(actor_2_age, actor_1_age,
+							character_2_gender),
+missing_text = "Missing")
+
+inline_text(table_summ, variable = "actor_2_age", 
+						column = "0")
+
 ```
 
-You can add options to executable code like this
+In @tbl-1, the median age of female actors recorded as Actor 2 is `r inline_text(table_summ, variable = "actor_2_age", column = "0")`
 
 ```{r}
-#| label: tbl-2
-#| tbl-cap: Data stratified by Age of Actor 1
 
 actor1age_table <- tbl_uvregression(
 	agegap,
@@ -80,31 +82,29 @@ actor1age_table <- tbl_uvregression(
 							character_2_gender),
 method = lm)
 
-agediffvalue <- inline_text(actor1age_table, variable = "age_difference")
+```
 
-inline_text(actor1age_table, variable = "actor_2_age")
+```{r}
+agediffvalue <- inline_text(actor1age_table, variable = "age_difference")
 
 avgact1age <- mean(agegap$actor_1_age, na.rm = TRUE)
 
 avgact2age <- mean(agegap$actor_2_age, na.rm = TRUE)
-
 ```
 
-The average age of Actor 1 actors is \`r round(avgact1age, 1)\`
+The average age of Actor 1 actors is `r round(avgact1age, 1)`
 
-The average age of Actor 2 actors is \`r round(avgact2age, 1)\`
-
-In @tbl-2, the age of actor 2 is (\`r inline_text(actor1age_table, variable = "actor_2_age")\`) times the age of actor 1.
+The average age of Actor 2 actors is `r round(avgact2age, 1)`
 
 ```{r}
-#| label: fig-1
-#| fig-cap: Histogram of Age Difference Across Dataset
+#| label: fig-hist
+#| fig-cap: Histogram of Age Difference Across Actor Sets
 
 hist(agegap$age_difference)
 
 ```
 
-In @fig-1, the relationship between \# of actors and age difference is inversely related. The age difference between Actors 1 and 2 increases as the frequency decreases.
+In @fig-hist, the relationship between number of actors and age difference is inversely related. The age difference between Actors 1 and 2 increases as the frequency decreases.
 
 ```{r}
 mean_age <- function(age_difference) {
@@ -116,9 +116,5 @@ mean_age <- function(age_difference) {
 mean_age(agegap$age_difference)
 ```
 
-```{r}
-install.packages("renv")
-renv::init()
-renv::snapshot()
-renv::status()
+```         
 ```
