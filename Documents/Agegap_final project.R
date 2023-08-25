@@ -39,8 +39,8 @@ tbl_summary(
 		actor_2_age ~ "Age of Actor 2",
 		actor_1_age ~ "Age of Actor 1",
 		age_difference ~ "Age Difference Between Actor 1 and Actor 2",
-		character_1_gender ~ "Gender of Character 1",
-		character_2_gender ~ "Gender of Character 2"
+		character_1_gender ~ "Gender Identity of Character 1",
+		character_2_gender ~ "Gender Identity of Character 2"
 		),
 	missing_text = "Missing")
 
@@ -49,13 +49,6 @@ tbl_summary(
 	agegap,
 	by = age_difference,
 	include = c(actor_1_age, actor_2_age))
-
-linear_model <- lm(age_difference ~ character_1_gender + character_2_gender +
-									 actor_2_age, actor_1_age,
-									 data = agegap)
-
-tbl_regression(
-	linear_model)
 
 actor1age_table <- tbl_uvregression(
 	agegap,
@@ -71,7 +64,7 @@ tbl_uvregression(
 							character_2_gender),
 	method = lm)
 
-inline_text(actor1age_table, variable = "age_difference")
+inline_text(actor1age_table, variable = "actor_2_age")
 
 hist(agegap$age_difference)
 
@@ -79,4 +72,11 @@ hist(agegap$age_difference)
 #add all packages into quarto doc and run code to create output
 
 
+mean_age <- function(age_difference) {
+	t <- length(age_difference)
+	mean <- sum(age_difference)/t
+	return(mean)
+}
 
+
+mean_age(age_difference)
