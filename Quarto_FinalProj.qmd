@@ -44,7 +44,8 @@ agegap$age_difference <- (agegap$actor_1_age - agegap$actor_2_age)
 
 ```{r}
 #| label: tbl-1
-#| tbl-cap: Summary of Actor Ages and Gender 
+#| tbl-cap: Summary of Actor Ages and Gender Stratified by the Gender Identity of Character 1
+#| tbl-subcap: Males coded as 1, Females coded as 0
 
 tbl_summary(
 	agegap,
@@ -64,6 +65,10 @@ table_summ <- tbl_summary(
 	by = character_1_gender,
 	include = c(actor_2_age, actor_1_age,
 							character_2_gender),
+	label = list(
+		actor_2_age ~ "Age of Actor 2",
+		actor_1_age ~ "Age of Actor 1",
+		character_2_gender ~ "Gender Identity of Character 2"),
 missing_text = "Missing")
 
 inline_text(table_summ, variable = "actor_2_age", 
@@ -71,7 +76,7 @@ inline_text(table_summ, variable = "actor_2_age",
 
 ```
 
-In @tbl-1, the median age of female actors recorded as Actor 2 is `r inline_text(table_summ, variable = "actor_2_age", column = "0")`
+In @tbl-1, the median age of female actors recorded as Actor 2 is `r inline_text(table_summ, variable = "actor_2_age", column = "0")`.
 
 ```{r}
 
@@ -92,19 +97,23 @@ avgact1age <- mean(agegap$actor_1_age, na.rm = TRUE)
 avgact2age <- mean(agegap$actor_2_age, na.rm = TRUE)
 ```
 
-The average age of Actor 1 actors is `r round(avgact1age, 1)`
+The average age of Actor 1 actors is `r round(avgact1age, 1)`.
 
-The average age of Actor 2 actors is `r round(avgact2age, 1)`
+The average age of Actor 2 actors is `r round(avgact2age, 1)`.
+
+The majority of actors recorded as Actor 1 are male, whereas the majority of actors recorded as Actor 2 are female.
 
 ```{r}
 #| label: fig-hist
-#| fig-cap: Histogram of Age Difference Across Actor Sets
+#| fig-cap: Histogram of Age Difference Across Number of Movies
 
-hist(agegap$age_difference)
+hist(agegap$age_difference, xlab = "Age Difference",
+		 ylab = "Number of Movies", main = "Age Gap Histogram")
+
 
 ```
 
-In @fig-hist, the relationship between number of actors and age difference is inversely related. The age difference between Actors 1 and 2 increases as the frequency decreases.
+In @fig-hist, the relationship between number of movies and age difference is inversely related. As the age difference between Actors 1 and 2 increases, the frequency for number of movies decreases.
 
 ```{r}
 mean_age <- function(age_difference) {
@@ -113,8 +122,9 @@ mean_age <- function(age_difference) {
 	return(mean)
 }
 
-mean_age(agegap$age_difference)
+avgagediff <- mean_age(agegap$age_difference)
 ```
 
+The average difference in ages between Actor 1 and Actor 2 is `r round(avgagediff, 1)` years.
 ```         
 ```
