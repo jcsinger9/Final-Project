@@ -74,5 +74,5 @@ mean_age <- function(age_difference) {
 avgagediff <- mean_age(agegap$age_difference)
 
 
-usethis::use_readme_rmd
+
 
